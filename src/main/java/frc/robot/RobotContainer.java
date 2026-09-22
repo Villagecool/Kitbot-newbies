@@ -12,17 +12,23 @@ import frc.robot.subsystems.MoterSpins;
 public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
   public final MoterSpins MoterSpins = new MoterSpins();
-  private final Command runCC = MoterSpins.startEnd(() -> MoterSpins.start(), () -> MoterSpins.stop())
-      .until(() -> joystick.x().getAsBoolean() == false);
 
   public RobotContainer() {
     configureBindings();
   }
 
-  private void configureBindings() {
-      joystick.x().whileTrue(runCC);
-  }
+  private final Command runOuttake = MoterSpins.startEnd(() -> MoterSpins.runIntake(), () -> MoterSpins.stop())
+      .until(() -> joystick.x().getAsBoolean() == false);
+  private final Command runIntake = MoterSpins.startEnd(() -> MoterSpins.runOuttake(), () -> MoterSpins.stop())
+      .until(() -> joystick.y().getAsBoolean() == false);
+  private final Command runshoot = MoterSpins.startEnd(() -> MoterSpins.runshoot(), () -> MoterSpins.stopshoot())
+      .until(() -> joystick.rightTrigger().getAsBoolean() == false);
 
+  public void configureBindings() {
+      joystick.x().whileTrue(runOuttake);
+      joystick.y().whileTrue(runIntake);
+      joystick.rightTrigger().whileTrue(runshoot);
+  }
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
