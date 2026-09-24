@@ -4,10 +4,15 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,16 +24,32 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
      private final SparkMax l_motorFollower1;
     // private final TalonFX l_motorFollower2;
      public final DifferentialDrive m_robotDrive;
+  private final Pigeon2 PigeonGyro = new Pigeon2 (1);
+  private final Pose2d pose;
+  private final RelativeEncoder leftEncoder;
+  private final RelativeEncoder rightEncoder;
+  
+    private final DifferentialDriveOdometry odometry;
+  
+  
 
 
   @SuppressWarnings("removal")
   public DifferentialDrivetrain6W() {// Instantiate Motor Controllers
     r_motorLeader = new SparkMax(1, MotorType.kBrushless);
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
-
+    rightEncoder = r_motorLeader.getEncoder();
+    pose = new Pose2d(0, 0, new Rotation2d());
     l_motorLeader = new SparkMax(4, MotorType.kBrushless);
     l_motorFollower1 = new SparkMax(5, MotorType.kBrushless);
-
+    leftEncoder = l_motorLeader.getEncoder();
+      
+    odometry = new DifferentialDriveOdometry(
+      PigeonGyro.getRotation2d(),
+      leftEncoder.getPosition(),
+      rightEncoder.getPosition(),
+      new Pose2d(0, 0, new Rotation2d()));
+  
     // --- Right Side Configuration ---
     SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
     // If your right side runs backward compared to left, invert it here:
@@ -54,18 +75,22 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     // Initialize DifferentialDrive using the leader motors
     m_robotDrive = new DifferentialDrive(l_motorLeader::set, r_motorLeader::set);
       
+    
   }
-  
 
-  
+ 
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-   
+   pose = odometry.update(
+    PigeonGyro.getRotation2d(),
+      leftEncoder.getPosition(),
+      rightEncoder.getPosition());
   }
   
- 
+  public Pose2d getPose2d() {
+    return pose;}
   } 
 
 
