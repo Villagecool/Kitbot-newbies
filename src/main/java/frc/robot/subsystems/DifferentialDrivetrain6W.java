@@ -25,7 +25,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     // private final TalonFX l_motorFollower2;
      public final DifferentialDrive m_robotDrive;
   private final Pigeon2 PigeonGyro = new Pigeon2 (1);
-  private final Pose2d pose;
+  private Pose2d pose;
   private final RelativeEncoder leftEncoder;
   private final RelativeEncoder rightEncoder;
   
