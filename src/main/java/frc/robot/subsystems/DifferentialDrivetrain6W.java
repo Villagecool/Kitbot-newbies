@@ -15,6 +15,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import org.littletonrobotics.junction.Logger;
 
 public class DifferentialDrivetrain6W extends SubsystemBase {
   private final SparkMax r_motorLeader;  //right motor
@@ -28,14 +31,19 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
   private Pose2d pose;
   private final RelativeEncoder leftEncoder;
   private final RelativeEncoder rightEncoder;
+  public SparkMaxConfig rightLeaderConfig;
+  public SparkMaxConfig rightFollowerConfig;
+
   
     private final DifferentialDriveOdometry odometry;
+    Field2d field = new Field2d();
   
   
 
 
   @SuppressWarnings("removal")
   public DifferentialDrivetrain6W() {// Instantiate Motor Controllers
+    
     r_motorLeader = new SparkMax(1, MotorType.kBrushless);
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
     rightEncoder = r_motorLeader.getEncoder();
@@ -51,12 +59,11 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
       new Pose2d(0, 0, new Rotation2d()));
   
     // --- Right Side Configuration ---
-    SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
+    rightLeaderConfig = new SparkMaxConfig();
     // If your right side runs backward compared to left, invert it here:
     // rightLeaderConfig.inverted(true);
 
-    SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
-    rightFollowerConfig.follow(r_motorLeader);
+    rightFollowerConfig = new SparkMaxConfig();
 
     // Apply configurations to Right motors
     r_motorLeader.configure(rightLeaderConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
@@ -82,11 +89,17 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
 
   @Override
   public void periodic() {
+    
     // This method will be called once per scheduler run
    pose = odometry.update(
     PigeonGyro.getRotation2d(),
       leftEncoder.getPosition(),
       rightEncoder.getPosition());
+    Logger.recordOutput("pose", pose);
+    SmartDashboard.putData("field", field);
+    field.setRobotPose(pose);
+    rightFollowerConfig.follow(r_motorLeader);
+    
   }
   
   public Pose2d getPose2d() {
