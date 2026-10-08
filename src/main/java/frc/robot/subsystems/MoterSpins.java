@@ -21,6 +21,7 @@ public class MoterSpins extends SubsystemBase {
   }
   public void start(){m_motor.set(.5);}
   public void stop(){m_motor.set(0);}
+
   public void runIntake() {
     m_motor.set(0.8);
   
