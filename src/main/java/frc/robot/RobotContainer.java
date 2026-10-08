@@ -50,7 +50,7 @@ public class RobotContainer {
       joystick.a().whileTrue(runshoot);
   }
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return choose.getSelected();
   }
  
   
