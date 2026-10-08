@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import org.littletonrobotics.junction.Logger;
 public class MoterSpins extends SubsystemBase {
   /** Creates a new MoterSpins. */
   private final SparkMax m_motor;
@@ -18,6 +19,7 @@ public class MoterSpins extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    Logger.recordOutput("motormogqofin", m_motor.getAppliedOutput());
   }
   public void start(){m_motor.set(.5);}
   public void stop(){m_motor.set(0);}
