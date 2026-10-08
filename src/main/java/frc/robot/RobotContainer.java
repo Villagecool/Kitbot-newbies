@@ -16,6 +16,7 @@ import frc.robot.subsystems.MoterSpins;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
@@ -50,8 +51,11 @@ public class RobotContainer {
       joystick.a().whileTrue(runshoot);
   }
   public Command getAutonomousCommand() {
-    return choose.getSelected();
+    Command selected = choose.getSelected();
+     if (selected != null) {
+      return selected;
+    } else {
+    return new PathPlannerAuto("New Auto");
+    }
   }
- 
-  
 }
