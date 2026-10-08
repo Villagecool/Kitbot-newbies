@@ -5,18 +5,23 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DifferentialDrivetrain6W;
 import frc.robot.subsystems.MoterSpins;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
   public final MoterSpins MoterSpins = new MoterSpins();
   private final DifferentialDrivetrain6W drivetrain = new DifferentialDrivetrain6W();
+  private final SendableChooser<Command> choose;
   public RobotContainer() {
     drivetrain.setDefaultCommand(
       new RunCommand(()->drivetrain.m_robotDrive.arcadeDrive(
@@ -27,7 +32,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
-
+    choose = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("New Path", choose);
     configureBindings();
   }
 
