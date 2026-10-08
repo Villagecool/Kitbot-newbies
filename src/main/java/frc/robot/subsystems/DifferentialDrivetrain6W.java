@@ -5,14 +5,21 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,13 +88,44 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
 
     // Initialize DifferentialDrive using the leader motors
     m_robotDrive = new DifferentialDrive(l_motorLeader::set, r_motorLeader::set);
-      
     
-  }
+    
+    DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
 
- 
+    var wSpeeds = new DifferentialDriveWheelSpeeds(l_motorLeader.getEncoder().getVelocity(), r_motorLeader.getEncoder().getVelocity());
 
-  @Override
+    ChassisSpeeds cSpeeds = kinematics.toChassisSpeeds(wSpeeds);
+    double velocity = cSpeeds.vxMetersPerSecond;
+    double omega = cSpeeds.omegaRadiansPerSecond;
+
+    
+    RobotConfig config;
+    config = new RobotConfig(0, 0, null, 0);
+    try{
+      config = RobotConfig.fromGUISettings();
+    }
+    catch (Exception e){
+      e.printStackTrace();
+    }
+  
+    AutoBuilder.configure(
+    this :: getPose2d,
+    this :: resetPose2d,
+    this :: getRobotRelativeSpeed,
+    (speeds, feedforwards)-> m_robotDrive.arcadeDrive(velocity, omega),
+                new PPLTVController(0.02),
+                config,
+                () -> {    var alliance = DriverStation.getAlliance();
+                          if (alliance.isPresent()) {
+                            return alliance.get() == DriverStation.Alliance.Red;
+                          }
+                          return false;
+                }
+              );
+              }
+          
+    
+            @Override
   public void periodic() {
     
     // This method will be called once per scheduler run
@@ -99,13 +137,32 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     SmartDashboard.putData("field", field);
     field.setRobotPose(pose);
     rightFollowerConfig.follow(r_motorLeader);
-    
   }
   
   public Pose2d getPose2d() {
     return pose;}
-  } 
 
+
+  public void resetPose2d(Pose2d newPose) {
+    pose = newPose;
+    odometry.resetPosition(
+      PigeonGyro.getRotation2d(),
+      leftEncoder.getPosition(),
+      rightEncoder.getPosition(),
+      newPose);
+    
+  }
+
+  public ChassisSpeeds getRobotRelativeSpeed() {
+    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(
+      leftEncoder.getVelocity(),
+      rightEncoder.getVelocity());
+    DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
+    return kinematics.toChassisSpeeds(wheelSpeeds);
+  }
+
+}
+  
 
 
 /*    r_motorLeader = new TalonFX(1);       // middle right
