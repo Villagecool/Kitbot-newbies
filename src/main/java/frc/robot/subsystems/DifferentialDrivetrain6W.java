@@ -27,30 +27,26 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import org.littletonrobotics.junction.Logger;
 
 public class DifferentialDrivetrain6W extends SubsystemBase {
-  private final SparkMax r_motorLeader;  //right motor
-    private final SparkMax r_motorFollower1;
-    // private final TalonFX r_motorFollower2;
-  private final SparkMax l_motorLeader;  //left motor
-     private final SparkMax l_motorFollower1;
-    // private final TalonFX l_motorFollower2;
-     public final DifferentialDrive m_robotDrive;
-  private final Pigeon2 PigeonGyro = new Pigeon2 (1);
+  private final SparkMax r_motorLeader; // right motor
+  private final SparkMax r_motorFollower1;
+  // private final TalonFX r_motorFollower2;
+  private final SparkMax l_motorLeader; // left motor
+  private final SparkMax l_motorFollower1;
+  // private final TalonFX l_motorFollower2;
+  public final DifferentialDrive m_robotDrive;
+  private final Pigeon2 PigeonGyro = new Pigeon2(1);
   private Pose2d pose;
   private final RelativeEncoder leftEncoder;
   private final RelativeEncoder rightEncoder;
   public SparkMaxConfig rightLeaderConfig;
   public SparkMaxConfig rightFollowerConfig;
 
-  
-    private final DifferentialDriveOdometry odometry;
-    Field2d field = new Field2d();
-  
-  
-
+  private final DifferentialDriveOdometry odometry;
+  Field2d field = new Field2d();
 
   @SuppressWarnings("removal")
   public DifferentialDrivetrain6W() {// Instantiate Motor Controllers
-    
+
     r_motorLeader = new SparkMax(1, MotorType.kBrushless);
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
     rightEncoder = r_motorLeader.getEncoder();
@@ -58,13 +54,13 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     l_motorLeader = new SparkMax(4, MotorType.kBrushless);
     l_motorFollower1 = new SparkMax(5, MotorType.kBrushless);
     leftEncoder = l_motorLeader.getEncoder();
-      
+
     odometry = new DifferentialDriveOdometry(
-      PigeonGyro.getRotation2d(),
-      leftEncoder.getPosition(),
-      rightEncoder.getPosition(),
-      new Pose2d(0, 0, new Rotation2d()));
-  
+        PigeonGyro.getRotation2d(),
+        leftEncoder.getPosition(),
+        rightEncoder.getPosition(),
+        new Pose2d(0, 0, new Rotation2d()));
+
     // --- Right Side Configuration ---
     rightLeaderConfig = new SparkMaxConfig();
     // If your right side runs backward compared to left, invert it here:
@@ -73,8 +69,10 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     rightFollowerConfig = new SparkMaxConfig();
 
     // Apply configurations to Right motors
-    r_motorLeader.configure(rightLeaderConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
-    r_motorFollower1.configure(rightFollowerConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
+    r_motorLeader.configure(rightLeaderConfig, SparkMax.ResetMode.kResetSafeParameters,
+        SparkMax.PersistMode.kPersistParameters);
+    r_motorFollower1.configure(rightFollowerConfig, SparkMax.ResetMode.kResetSafeParameters,
+        SparkMax.PersistMode.kPersistParameters);
 
     // --- Left Side Configuration ---
     SparkMaxConfig leftLeaderConfig = new SparkMaxConfig();
@@ -83,101 +81,105 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     leftFollowerConfig.follow(l_motorLeader);
 
     // Apply configurations to Left motors
-    l_motorLeader.configure(leftLeaderConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
-    l_motorFollower1.configure(leftFollowerConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
+    l_motorLeader.configure(leftLeaderConfig, SparkMax.ResetMode.kResetSafeParameters,
+        SparkMax.PersistMode.kPersistParameters);
+    l_motorFollower1.configure(leftFollowerConfig, SparkMax.ResetMode.kResetSafeParameters,
+        SparkMax.PersistMode.kPersistParameters);
 
     // Initialize DifferentialDrive using the leader motors
     m_robotDrive = new DifferentialDrive(l_motorLeader::set, r_motorLeader::set);
-    
-    
+
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
 
-    var wSpeeds = new DifferentialDriveWheelSpeeds(l_motorLeader.getEncoder().getVelocity(), r_motorLeader.getEncoder().getVelocity());
+    var wSpeeds = new DifferentialDriveWheelSpeeds(l_motorLeader.getEncoder().getVelocity(),
+        r_motorLeader.getEncoder().getVelocity());
 
     ChassisSpeeds cSpeeds = kinematics.toChassisSpeeds(wSpeeds);
     double velocity = cSpeeds.vxMetersPerSecond;
     double omega = cSpeeds.omegaRadiansPerSecond;
 
-    
     RobotConfig config;
     config = new RobotConfig(0, 0, null, 0);
-    try{
+    try {
       config = RobotConfig.fromGUISettings();
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
     }
-  
+
     AutoBuilder.configure(
-    this :: getPose2d,
-    this :: resetPose2d,
-    this :: getRobotRelativeSpeed,
-    (speeds, feedforwards)-> m_robotDrive.arcadeDrive(velocity, omega),
-                new PPLTVController(0.02),
-                config,
-                () -> {    var alliance = DriverStation.getAlliance();
-                          if (alliance.isPresent()) {
-                            return alliance.get() == DriverStation.Alliance.Red;
-                          }
-                          return false;
-                }
-              );
-              }
-          
-    
-            @Override
+        this::getPose2d,
+        this::resetPose2d,
+        this::getRobotRelativeSpeed,
+        (speeds, feedforwards) -> m_robotDrive.arcadeDrive(velocity, omega),
+        new PPLTVController(0.02),
+        config,
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        });
+  }
+
+  @Override
   public void periodic() {
-    
+
     // This method will be called once per scheduler run
-   pose = odometry.update(
-    PigeonGyro.getRotation2d(),
-      leftEncoder.getPosition(),
-      rightEncoder.getPosition());
+    pose = odometry.update(
+        PigeonGyro.getRotation2d(),
+        leftEncoder.getPosition(),
+        rightEncoder.getPosition());
     Logger.recordOutput("pose", pose);
     SmartDashboard.putData("field", field);
     field.setRobotPose(pose);
     rightFollowerConfig.follow(r_motorLeader);
   }
-  
-  public Pose2d getPose2d() {
-    return pose;}
 
+  public Pose2d getPose2d() {
+    return pose;
+  }
 
   public void resetPose2d(Pose2d newPose) {
     pose = newPose;
     odometry.resetPosition(
-      PigeonGyro.getRotation2d(),
-      leftEncoder.getPosition(),
-      rightEncoder.getPosition(),
-      newPose);
-    
+        PigeonGyro.getRotation2d(),
+        leftEncoder.getPosition(),
+        rightEncoder.getPosition(),
+        newPose);
+
   }
 
   public ChassisSpeeds getRobotRelativeSpeed() {
     DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(
-      leftEncoder.getVelocity(),
-      rightEncoder.getVelocity());
+        leftEncoder.getVelocity(),
+        rightEncoder.getVelocity());
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
     return kinematics.toChassisSpeeds(wheelSpeeds);
   }
 
 }
-  
 
+/*
+ * r_motorLeader = new TalonFX(1); // middle right
+ * r_motorFollower1 = new TalonFX(2); // top right
+ * r_motorFollower1.setControl(new Follower(r_motorLeader.getDeviceID(),
+ * MotorAlignmentValue.Aligned));
+ * // r_motorFollower2 = new TalonFX(3); // bottom right
+ * // r_motorFollower2.setControl(new Follower(r_motorLeader.getDeviceID(),
+ * MotorAlignmentValue.Aligned));
+ * 
+ * l_motorLeader = new TalonFX(4); // middle left
+ * // l_motorLeader.setControl(new Follower(r_motorLeader.getDeviceID(),
+ * MotorAlignmentValue.Opposed));
+ * l_motorFollower1 = new TalonFX(5); // top left
+ * l_motorFollower1.setControl(new Follower(l_motorLeader.getDeviceID(),
+ * MotorAlignmentValue.Aligned));
+ * // l_motorFollower2 = new TalonFX(6); // bottom
+ * // l_motorFollower2.setControl(new Follower(l_motorLeader.getDeviceID(),
+ * MotorAlignmentValue.Aligned));
+ */
 
-/*    r_motorLeader = new TalonFX(1);       // middle right
-      r_motorFollower1 = new TalonFX(2);  // top right
-        r_motorFollower1.setControl(new Follower(r_motorLeader.getDeviceID(), MotorAlignmentValue.Aligned));
-      // r_motorFollower2 = new TalonFX(3);  // bottom right
-      //   r_motorFollower2.setControl(new Follower(r_motorLeader.getDeviceID(), MotorAlignmentValue.Aligned));
-        
-    l_motorLeader = new TalonFX(4);       // middle left
-        // l_motorLeader.setControl(new Follower(r_motorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
-      l_motorFollower1 = new TalonFX(5);  // top left
-         l_motorFollower1.setControl(new Follower(l_motorLeader.getDeviceID(), MotorAlignmentValue.Aligned));
-    //  l_motorFollower2 = new TalonFX(6);  // bottom 
-    //     l_motorFollower2.setControl(new Follower(l_motorLeader.getDeviceID(), MotorAlignmentValue.Aligned)); */ 
-    
-    // public void arcadedrive(double x, double y){
-  //    r_motorLeader.set(-(x-y));
-  //   l_motorLeader.set(-(x+y));
+// public void arcadedrive(double x, double y){
+// r_motorLeader.set(-(x-y));
+// l_motorLeader.set(-(x+y));
