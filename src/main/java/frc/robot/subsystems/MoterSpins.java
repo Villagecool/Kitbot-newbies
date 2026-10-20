@@ -30,14 +30,7 @@ public class MoterSpins extends SubsystemBase {
   public void runOuttake() {
     m_motor.set(-0.8);
   }
-  public void stopIntake() {
-    m_motor.set(0.0);
-  }
-
+  
   public void startshoot(){s_motor.set(.5);}
-  public void stopshoot(){s_motor.set(0);}
-  public void runshoot() {
-    s_motor.set(0.8);
-  }
 
 }
