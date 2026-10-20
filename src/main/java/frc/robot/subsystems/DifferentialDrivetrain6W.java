@@ -41,8 +41,10 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
   
 
 
-  @SuppressWarnings("removal")
-  public DifferentialDrivetrain6W() {// Instantiate Motor Controllers
+  @SuppressWarnings("removal") // supresses "obselte" warning
+  public DifferentialDrivetrain6W() {
+    
+    // Instantiate Motor Controllers
     
     r_motorLeader = new SparkMax(1, MotorType.kBrushless);
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
@@ -91,6 +93,8 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
   public void periodic() {
     
     // This method will be called once per scheduler run
+
+  
    pose = odometry.update(
     PigeonGyro.getRotation2d(),
       leftEncoder.getPosition(),
@@ -101,7 +105,10 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     rightFollowerConfig.follow(r_motorLeader);
     
   }
-  
+  /**
+   * gets pose
+   * @return odometry of Motors+gryo
+   */
   public Pose2d getPose2d() {
     return pose;}
   } 

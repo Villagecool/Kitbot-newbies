@@ -8,8 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import org.littletonrobotics.junction.Logger;
 public class MoterSpins extends SubsystemBase {
-  /** Creates a new MoterSpins. */
+  /** Intake/outtake motor. */
   private final SparkMax m_motor;
+  /** Shooter motor */
   private final SparkMax s_motor;
   public MoterSpins() {
     m_motor = new SparkMax (0, MotorType.kBrushless);
@@ -21,24 +22,17 @@ public class MoterSpins extends SubsystemBase {
     // This method will be called once per scheduler run
     Logger.recordOutput("motormogqofin", m_motor.getAppliedOutput());
   }
-  public void start(){m_motor.set(.5);}
-  public void stop(){m_motor.set(0);}
 
+  /** starts the intale (brings balls into chassis) */
   public void runIntake() {
     m_motor.set(0.8);
   
   }
+  /** reverses the intake (spits balls out the front) */
   public void runOuttake() {
     m_motor.set(-0.8);
   }
-  public void stopIntake() {
-    m_motor.set(0.0);
-  }
-
+  /** shoots balls out of the shooter */
   public void startshoot(){s_motor.set(.5);}
-  public void stopshoot(){s_motor.set(0);}
-  public void runshoot() {
-    s_motor.set(0.8);
-  }
 
 }

@@ -24,18 +24,18 @@ public class RobotContainer {
         MathUtil.applyDeadband(joystick.getLeftX(), 0.1)
       ), drivetrain)
    );
-    NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
-    NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
-    NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
+    NamedCommands.registerCommand("runIntake", Commands.run(MoterSpins::runIntake));
+    NamedCommands.registerCommand("runOuttake", Commands.run(MoterSpins::runOuttake));
+    NamedCommands.registerCommand("startshoot", Commands.run(MoterSpins::startshoot));
 
     configureBindings();
   }
 
-  private final Command runOuttake = MoterSpins.startEnd(() -> MoterSpins.runIntake(), () -> MoterSpins.stop())
+  private final Command runOuttake = MoterSpins.run(() -> MoterSpins.runIntake())
       .until(() -> joystick.x().getAsBoolean() == false);
-  private final Command runIntake = MoterSpins.startEnd(() -> MoterSpins.runOuttake(), () -> MoterSpins.stop())
+  private final Command runIntake = MoterSpins.run(() -> MoterSpins.runOuttake())
       .until(() -> joystick.y().getAsBoolean() == false);
-  private final Command runshoot = MoterSpins.startEnd(() -> MoterSpins.runshoot(), () -> MoterSpins.stopshoot())
+  private final Command runshoot = MoterSpins.run(() -> MoterSpins.startshoot())
       .until(() -> joystick.a().getAsBoolean() == false);
 
   public void configureBindings() {
