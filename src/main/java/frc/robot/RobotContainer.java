@@ -32,7 +32,7 @@ public class RobotContainer {
    );
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
-    NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
+    NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::startshoot, MoterSpins::stopshoot, MoterSpins));
     choose = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("New Path", choose);
     configureBindings();
@@ -42,7 +42,7 @@ public class RobotContainer {
       .until(() -> joystick.x().getAsBoolean() == false);
   private final Command runIntake = MoterSpins.startEnd(() -> MoterSpins.runOuttake(), () -> MoterSpins.stop())
       .until(() -> joystick.y().getAsBoolean() == false);
-  private final Command runshoot = MoterSpins.startEnd(() -> MoterSpins.runshoot(), () -> MoterSpins.stopshoot())
+  private final Command runshoot = MoterSpins.startEnd(() -> MoterSpins.startshoot(), () -> MoterSpins.stopshoot())
       .until(() -> joystick.a().getAsBoolean() == false);
 
   public void configureBindings() {

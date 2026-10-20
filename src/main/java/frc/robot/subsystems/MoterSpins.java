@@ -23,14 +23,21 @@ public class MoterSpins extends SubsystemBase {
   }
   public void start(){m_motor.set(.5);}
   public void stop(){m_motor.set(0);}
+
+  /** sucks balls in */
   public void runIntake() {
     m_motor.set(0.8);
   
   }
+  /** spits balls out front */
   public void runOuttake() {
     m_motor.set(-0.8);
   }
-  
+  /** starts shooter */
   public void startshoot(){s_motor.set(.5);}
+
+  /** stops shooter */
+  public void stopshoot(){s_motor.set(.5);}
+
 
 }
