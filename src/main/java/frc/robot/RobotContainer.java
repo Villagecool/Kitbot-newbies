@@ -25,9 +25,9 @@ public class RobotContainer {
   //private final SendableChooser<Command> choose;
   public RobotContainer() {
     drivetrain.setDefaultCommand(
-      new RunCommand(()->drivetrain.driver(
-        MathUtil.applyDeadband(-joystick.getLeftY(), 0.1), 
-        MathUtil.applyDeadband(joystick.getRightX(), 0.1)
+      new RunCommand(()->drivetrain.arcadedrive(
+        MathUtil.applyDeadband(-joystick.getLeftX(), 0.1)*0.6, 
+        MathUtil.applyDeadband(joystick.getLeftY(), 0.1)*0.6
       ), drivetrain)
    );
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));

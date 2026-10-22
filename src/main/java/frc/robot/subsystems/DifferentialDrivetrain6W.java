@@ -51,7 +51,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
   @SuppressWarnings("removal")
   public DifferentialDrivetrain6W() {// Instantiate Motor Controllers
 
-    r_motorLeader = new SparkMax(1, MotorType.kBrushless);
+    r_motorLeader = new SparkMax(3, MotorType.kBrushless);
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
     rightEncoder = r_motorLeader.getEncoder();
     pose = new Pose2d(0, 0, new Rotation2d());
@@ -66,16 +66,17 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         new Pose2d(0, 0, new Rotation2d()));
 
     // --- Right Side Configuration ---
-    rightLeaderConfig = new SparkMaxConfig();
+    SparkMaxConfig rightLeaderConfig = new SparkMaxConfig();
     // If your right side runs backward compared to left, invert it here:
     // rightLeaderConfig.inverted(true);
 
-    rightFollowerConfig = new SparkMaxConfig();
+    SparkMaxConfig rightFollowerConfig = new SparkMaxConfig();
+    rightFollowerConfig.follow(r_motorLeader);
 
     // Apply configurations to Right motors
     r_motorLeader.configure(rightLeaderConfig, SparkMax.ResetMode.kResetSafeParameters,
         SparkMax.PersistMode.kPersistParameters);
-        rightLeaderConfig.inverted(true);
+        rightLeaderConfig.inverted(false);
     r_motorFollower1.configure(rightFollowerConfig, SparkMax.ResetMode.kResetSafeParameters,
         SparkMax.PersistMode.kPersistParameters);
 
@@ -92,7 +93,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         SparkMax.PersistMode.kPersistParameters);
 
     // Initialize DifferentialDrive using the leader motors
-    m_robotDrive = new DifferentialDrive((double speed) -> l_motorLeader.set(speed), (double speed) -> r_motorLeader.set(speed));
+    m_robotDrive = new DifferentialDrive((double speed) -> {l_motorLeader.set(speed); r_motorLeader.set(speed);}, (double speed) -> { l_motorLeader.set(speed); r_motorLeader.set(-speed);});
 
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
 
@@ -166,6 +167,10 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     m_robotDrive.tankDrive(speed, rotation);
   }
 
+  public void arcadedrive(double x, double y){
+    r_motorLeader.set(-(x-y));
+    l_motorLeader.set(-(x+y));
+  }
 }
 
 /*
@@ -187,7 +192,3 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
  * // l_motorFollower2.setControl(new Follower(l_motorLeader.getDeviceID(),
  * MotorAlignmentValue.Aligned));
  */
-
-// public void arcadedrive(double x, double y){
-// r_motorLeader.set(-(x-y));
-// l_motorLeader.set(-(x+y));
