@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DifferentialDrivetrain6W;
 import frc.robot.subsystems.MoterSpins;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -22,19 +22,19 @@ public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
   public final MoterSpins MoterSpins = new MoterSpins();
   private final DifferentialDrivetrain6W drivetrain = new DifferentialDrivetrain6W();
-  private final SendableChooser<Command> choose;
+  //private final SendableChooser<Command> choose;
   public RobotContainer() {
     drivetrain.setDefaultCommand(
-      new RunCommand(()->drivetrain.m_robotDrive.arcadeDrive(
-        MathUtil.applyDeadband(joystick.getLeftY(), 0.1), 
-        MathUtil.applyDeadband(joystick.getLeftX(), 0.1)
+      new RunCommand(()->drivetrain.driver(
+        MathUtil.applyDeadband(-joystick.getLeftY(), 0.1), 
+        MathUtil.applyDeadband(joystick.getRightX(), 0.1)
       ), drivetrain)
    );
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
-    NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
-    choose = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("New Path", choose);
+    //NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
+    //choose = AutoBuilder.buildAutoChooser();
+    //SmartDashboard.putData("New Path", choose);
     configureBindings();
   }
 
@@ -42,20 +42,21 @@ public class RobotContainer {
       .until(() -> joystick.x().getAsBoolean() == false);
   private final Command runIntake = MoterSpins.startEnd(() -> MoterSpins.runOuttake(), () -> MoterSpins.stop())
       .until(() -> joystick.y().getAsBoolean() == false);
-  private final Command runshoot = MoterSpins.startEnd(() -> MoterSpins.runshoot(), () -> MoterSpins.stopshoot())
-      .until(() -> joystick.a().getAsBoolean() == false);
+/*   private final Command runshoot = MoterSpins.startEnd(() -> MoterSpins.runshoot(), () -> MoterSpins.stopshoot())
+      .until(() -> joystick.a().getAsBoolean() == false); */
 
   public void configureBindings() {
       joystick.x().whileTrue(runOuttake);
       joystick.y().whileTrue(runIntake);
-      joystick.a().whileTrue(runshoot);
+      //joystick.a().whileTrue(runshoot);
   }
   public Command getAutonomousCommand() {
-    Command selected = choose.getSelected();
+    /* Command selected = choose.getSelected();
      if (selected != null) {
       return selected;
     } else {
     return new PathPlannerAuto("New Auto");
-    }
+    } */
+   return null;
   }
 }

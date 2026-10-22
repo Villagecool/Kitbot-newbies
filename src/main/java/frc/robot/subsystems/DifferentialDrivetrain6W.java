@@ -5,14 +5,13 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,8 +21,12 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
+import java.lang.ModuleLayer.Controller;
+
 import org.littletonrobotics.junction.Logger;
 
 public class DifferentialDrivetrain6W extends SubsystemBase {
@@ -32,9 +35,10 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
   // private final TalonFX r_motorFollower2;
   private final SparkMax l_motorLeader; // left motor
   private final SparkMax l_motorFollower1;
+  public final CommandXboxController joystick = new CommandXboxController(1);
   // private final TalonFX l_motorFollower2;
   public final DifferentialDrive m_robotDrive;
-  private final Pigeon2 PigeonGyro = new Pigeon2(1);
+  private final Pigeon2 PigeonGyro = new Pigeon2(21);
   private Pose2d pose;
   private final RelativeEncoder leftEncoder;
   private final RelativeEncoder rightEncoder;
@@ -51,10 +55,10 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
     rightEncoder = r_motorLeader.getEncoder();
     pose = new Pose2d(0, 0, new Rotation2d());
-    l_motorLeader = new SparkMax(4, MotorType.kBrushless);
-    l_motorFollower1 = new SparkMax(5, MotorType.kBrushless);
+    l_motorLeader = new SparkMax(5, MotorType.kBrushless);
+    l_motorFollower1 = new SparkMax(6, MotorType.kBrushless);
     leftEncoder = l_motorLeader.getEncoder();
-
+    
     odometry = new DifferentialDriveOdometry(
         PigeonGyro.getRotation2d(),
         leftEncoder.getPosition(),
@@ -71,6 +75,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     // Apply configurations to Right motors
     r_motorLeader.configure(rightLeaderConfig, SparkMax.ResetMode.kResetSafeParameters,
         SparkMax.PersistMode.kPersistParameters);
+        rightLeaderConfig.inverted(true);
     r_motorFollower1.configure(rightFollowerConfig, SparkMax.ResetMode.kResetSafeParameters,
         SparkMax.PersistMode.kPersistParameters);
 
@@ -87,7 +92,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         SparkMax.PersistMode.kPersistParameters);
 
     // Initialize DifferentialDrive using the leader motors
-    m_robotDrive = new DifferentialDrive(l_motorLeader::set, r_motorLeader::set);
+    m_robotDrive = new DifferentialDrive((double speed) -> l_motorLeader.set(speed), (double speed) -> r_motorLeader.set(speed));
 
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
 
@@ -98,15 +103,16 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     double velocity = cSpeeds.vxMetersPerSecond;
     double omega = cSpeeds.omegaRadiansPerSecond;
 
-    RobotConfig config;
+
+    /* RobotConfig config;
     config = new RobotConfig(0, 0, null, 0);
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
       e.printStackTrace();
-    }
+    } */
 
-    AutoBuilder.configure(
+    /* AutoBuilder.configure(
         this::getPose2d,
         this::resetPose2d,
         this::getRobotRelativeSpeed,
@@ -119,7 +125,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
             return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
-        });
+        }); /* */
   }
 
   @Override
@@ -133,7 +139,6 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     Logger.recordOutput("pose", pose);
     SmartDashboard.putData("field", field);
     field.setRobotPose(pose);
-    rightFollowerConfig.follow(r_motorLeader);
   }
 
   public Pose2d getPose2d() {
@@ -156,6 +161,9 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         rightEncoder.getVelocity());
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6731);
     return kinematics.toChassisSpeeds(wheelSpeeds);
+  }
+  public void driver(double speed, double rotation) {
+    m_robotDrive.tankDrive(speed, rotation);
   }
 
 }

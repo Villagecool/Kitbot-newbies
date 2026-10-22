@@ -12,8 +12,8 @@ public class MoterSpins extends SubsystemBase {
   private final SparkMax m_motor;
   private final SparkMax s_motor;
   public MoterSpins() {
-    m_motor = new SparkMax (0, MotorType.kBrushless);
-    s_motor = new SparkMax (3, MotorType.kBrushless);
+    m_motor = new SparkMax (3, MotorType.kBrushless);
+    s_motor = new SparkMax (4, MotorType.kBrushless);
   }
 
   @Override
