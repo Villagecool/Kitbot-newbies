@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-//import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.revrobotics.RelativeEncoder;
@@ -25,10 +25,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
-import java.lang.ModuleLayer.Controller;
-
-import org.littletonrobotics.junction.Logger;
-
 public class DifferentialDrivetrain6W extends SubsystemBase {
   private final SparkMax r_motorLeader; // right motor
   private final SparkMax r_motorFollower1;
@@ -44,13 +40,20 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
   private final RelativeEncoder rightEncoder;
   public SparkMaxConfig rightLeaderConfig;
   public SparkMaxConfig rightFollowerConfig;
+  private RobotConfig config;
+  public double velocity, omega;
 
   private final DifferentialDriveOdometry odometry;
   Field2d field = new Field2d();
 
   @SuppressWarnings("removal")
   public DifferentialDrivetrain6W() {// Instantiate Motor Controllers
-
+    try {
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
     r_motorLeader = new SparkMax(3, MotorType.kBrushless);
     r_motorFollower1 = new SparkMax(2, MotorType.kBrushless);
     rightEncoder = r_motorLeader.getEncoder();
@@ -101,23 +104,24 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         r_motorLeader.getEncoder().getVelocity());
 
     ChassisSpeeds cSpeeds = kinematics.toChassisSpeeds(wSpeeds);
-    double velocity = cSpeeds.vxMetersPerSecond;
-    double omega = cSpeeds.omegaRadiansPerSecond;
-
-
-    /* RobotConfig config;
-    config = new RobotConfig(0, 0, null, 0);
+    velocity = cSpeeds.vxMetersPerSecond;
+    omega = cSpeeds.omegaRadiansPerSecond;
+    config = new RobotConfig(29, 6.883, null, 0.6731);
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
       e.printStackTrace();
-    } */
+      throw new RuntimeException(e);
+    }
+    
+  }
 
-    /* AutoBuilder.configure(
+  public void configureAuto() {
+    AutoBuilder.configure(
         this::getPose2d,
         this::resetPose2d,
         this::getRobotRelativeSpeed,
-        (speeds, feedforwards) -> m_robotDrive.arcadeDrive(velocity, omega),
+        (speeds, feedforwards) -> m_robotDrive.arcadeDrive(speeds.vxMetersPerSecond, speeds.omegaRadiansPerSecond),
         new PPLTVController(0.02),
         config,
         () -> {
@@ -126,7 +130,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
             return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
-        }); /* */
+        });
   }
 
   @Override
@@ -137,7 +141,6 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         PigeonGyro.getRotation2d(),
         leftEncoder.getPosition(),
         rightEncoder.getPosition());
-    Logger.recordOutput("pose", pose);
     SmartDashboard.putData("field", field);
     field.setRobotPose(pose);
   }

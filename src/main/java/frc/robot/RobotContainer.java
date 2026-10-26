@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DifferentialDrivetrain6W;
 import frc.robot.subsystems.MoterSpins;
 
-//import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -22,7 +22,7 @@ public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
   public final MoterSpins MoterSpins = new MoterSpins();
   private final DifferentialDrivetrain6W drivetrain = new DifferentialDrivetrain6W();
-  //private final SendableChooser<Command> choose;
+  private final SendableChooser<Command> choose;
   public RobotContainer() {
     drivetrain.setDefaultCommand(
       new RunCommand(()->drivetrain.arcadedrive(
@@ -33,8 +33,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
     //NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
-    //choose = AutoBuilder.buildAutoChooser();
-    //SmartDashboard.putData("New Path", choose);
+    choose = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("New Path", choose);
     configureBindings();
   }
 
@@ -51,12 +51,11 @@ public class RobotContainer {
       //joystick.a().whileTrue(runshoot);
   }
   public Command getAutonomousCommand() {
-    /* Command selected = choose.getSelected();
+    Command selected = choose.getSelected();
      if (selected != null) {
       return selected;
     } else {
     return new PathPlannerAuto("New Auto");
-    } */
-   return null;
+    }
   }
 }
