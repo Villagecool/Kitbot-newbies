@@ -120,7 +120,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         this::getPose2d,
         this::resetPose2d,
         this::getRobotRelativeSpeed,
-        (cspeeds, feedforwards) -> m_robotDrive.arcadeDrive(cspeeds.vxMetersPerSecond, cspeeds.omegaRadiansPerSecond),
+        (cspeeds, feedforwards) -> arcadedrive(cspeeds.vxMetersPerSecond*Math.cos(cspeeds.omegaRadiansPerSecond), cspeeds.vxMetersPerSecond*Math.sin(cspeeds.omegaRadiansPerSecond)),
         new PPLTVController(0.02),
         config,
         () -> {
