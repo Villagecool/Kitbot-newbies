@@ -26,8 +26,8 @@ public class RobotContainer {
   public RobotContainer() {
     drivetrain.setDefaultCommand(
       new RunCommand(()->drivetrain.arcadedrive(
-        MathUtil.applyDeadband(-joystick.getLeftX(), 0.1)*0.6, 
-        MathUtil.applyDeadband(joystick.getLeftY(), 0.1)*0.6
+        MathUtil.applyDeadband(joystick.getLeftX(), 0.1)*0.6, 
+        MathUtil.applyDeadband(-joystick.getLeftY(), 0.1)*0.6
       ), drivetrain)
    );
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
@@ -52,11 +52,12 @@ public class RobotContainer {
       //joystick.a().whileTrue(runshoot);
   }
   public Command getAutonomousCommand() {
-    Command selected = choose.getSelected();
-     if (selected != null) {
+    //Command selected = choose.getSelected();
+     /* if (selected != null) {
       return selected;
     } else {
     return new PathPlannerAuto("New Auto");
-    }
+    } */
+   return new PathPlannerAuto("New Auto");
   }
 }
