@@ -21,7 +21,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
   public final MoterSpins MoterSpins = new MoterSpins();
-  private final DifferentialDrivetrain6W drivetrain = new DifferentialDrivetrain6W();
+  public final DifferentialDrivetrain6W drivetrain = new DifferentialDrivetrain6W();
   private final SendableChooser<Command> choose;
   public RobotContainer() {
     drivetrain.setDefaultCommand(
@@ -33,6 +33,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
     //NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::runshoot, MoterSpins::stopshoot, MoterSpins));
+    drivetrain.configureAuto();
     choose = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("New Path", choose);
     configureBindings();

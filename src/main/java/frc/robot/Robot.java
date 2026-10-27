@@ -27,6 +27,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     Logger.start();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
   }
 
   @Override
@@ -46,8 +47,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    m_robotContainer.drivetrain.m_robotDrive.setSafetyEnabled(false);
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
@@ -61,6 +61,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.drivetrain.m_robotDrive.setSafetyEnabled(true);
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

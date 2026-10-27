@@ -106,7 +106,6 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
     ChassisSpeeds cSpeeds = kinematics.toChassisSpeeds(wSpeeds);
     velocity = cSpeeds.vxMetersPerSecond;
     omega = cSpeeds.omegaRadiansPerSecond;
-    config = new RobotConfig(29, 6.883, null, 0.6731);
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -121,7 +120,7 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
         this::getPose2d,
         this::resetPose2d,
         this::getRobotRelativeSpeed,
-        (speeds, feedforwards) -> m_robotDrive.arcadeDrive(speeds.vxMetersPerSecond, speeds.omegaRadiansPerSecond),
+        (cspeeds, feedforwards) -> m_robotDrive.arcadeDrive(cspeeds.vxMetersPerSecond, cspeeds.omegaRadiansPerSecond),
         new PPLTVController(0.02),
         config,
         () -> {
