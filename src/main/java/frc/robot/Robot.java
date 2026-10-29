@@ -18,7 +18,7 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-    Logger.recordMetadata("ProjectName", "Theseus");
+    Logger.recordMetadata("ProjectName", "Lebot");
     Logger.recordMetadata("TeamNumber", "4982");
     Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
     Logger.addDataReceiver(new NT4Publisher());

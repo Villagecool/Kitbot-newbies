@@ -22,7 +22,7 @@ public class RobotContainer {
   public final CommandXboxController joystick = new CommandXboxController(0);
   public final MoterSpins MoterSpins = new MoterSpins();
   public final DifferentialDrivetrain6W drivetrain = new DifferentialDrivetrain6W();
-  private final SendableChooser<Command> choose;
+  private final SendableChooser<Command> autoChooser;
   public RobotContainer() {
     drivetrain.setDefaultCommand(
       new RunCommand(()->drivetrain.arcadedrive(
@@ -35,8 +35,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::startshoot, MoterSpins::stopshoot, MoterSpins));
     NamedCommands.registerCommand("stopShoot", Commands.startEnd(MoterSpins::stopshoot, MoterSpins::stopshoot, MoterSpins));
     drivetrain.configureAuto();
-    choose = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("New Path", choose);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Path A", autoChooser);
     configureBindings();
   }
 
@@ -53,12 +53,12 @@ private final Command startshoot = MoterSpins.startEnd(() -> MoterSpins.startsho
       joystick.a().whileTrue(startshoot);
   }
   public Command getAutonomousCommand() {
-    //Command selected = choose.getSelected();
+    //Command selected = autoChooser.getSelected();
      /* if (selected != null) {
       return selected;
     } else {
     return new PathPlannerAuto("New Auto");
     } */
-   return new PathPlannerAuto("New Auto");
+   return new PathPlannerAuto("Auto A");
   }
 }

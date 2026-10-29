@@ -129,7 +129,8 @@ public class DifferentialDrivetrain6W extends SubsystemBase {
             return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
-        });
+        },
+        this);
   }
 
   @Override
