@@ -26,30 +26,39 @@ public class RobotContainer {
   public RobotContainer() {
     drivetrain.setDefaultCommand(
       new RunCommand(()->drivetrain.arcadedrive(
-        MathUtil.applyDeadband(joystick.getLeftX(), 0.1)*0.6, 
-        MathUtil.applyDeadband(-joystick.getLeftY(), 0.1)*0.6
+        MathUtil.applyDeadband(-joystick.getLeftX(), 0.1)*0.35, 
+        MathUtil.applyDeadband(joystick.getLeftY(), 0.1)*-0.6
       ), drivetrain)
    );
     NamedCommands.registerCommand("runIntake", Commands.startEnd(MoterSpins::runIntake, MoterSpins::stop, MoterSpins));
     NamedCommands.registerCommand("runOuttake", Commands.startEnd(MoterSpins::runOuttake, MoterSpins::stop, MoterSpins));
-    NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::startshoot, MoterSpins::stopshoot, MoterSpins));
+    NamedCommands.registerCommand("startshoot", Commands.startEnd(MoterSpins::intakeonly, MoterSpins::stopshoot, MoterSpins));
     NamedCommands.registerCommand("stopShoot", Commands.startEnd(MoterSpins::stopshoot, MoterSpins::stopshoot, MoterSpins));
     drivetrain.configureAuto();
     autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Path A", autoChooser);
+    SmartDashboard.putData("Path A'", autoChooser);
     configureBindings();
   }
 
-  private final Command runOuttake = MoterSpins.startEnd(() -> MoterSpins.runIntake(), () -> MoterSpins.stop())
+  /*
+   * X: Shoot
+   * Y: Unload
+   * A: Intake
+   * 
+
+
+
+   */
+  private final Command runIntake = MoterSpins.startEnd(() -> MoterSpins.runIntake(), () -> MoterSpins.stop())
       .until(() -> joystick.x().getAsBoolean() == false);
-  private final Command runIntake = MoterSpins.startEnd(() -> MoterSpins.runOuttake(), () -> MoterSpins.stop())
+  private final Command runOuttake = MoterSpins.startEnd(() -> MoterSpins.runOuttake(), () -> MoterSpins.stop())
       .until(() -> joystick.y().getAsBoolean() == false);
-private final Command startshoot = MoterSpins.startEnd(() -> MoterSpins.startshoot(), () -> MoterSpins.stopshoot())
+private final Command startshoot = MoterSpins.startEnd(() -> MoterSpins.intakeonly(), () -> MoterSpins.stopshoot())
       .until(() -> joystick.a().getAsBoolean() == false);
 
   public void configureBindings() {
-      joystick.x().whileTrue(runOuttake);
-      joystick.y().whileTrue(runIntake);
+      joystick.x().whileTrue(runIntake);
+      joystick.y().whileTrue(runOuttake);
       joystick.a().whileTrue(startshoot);
   }
   public Command getAutonomousCommand() {
@@ -59,6 +68,7 @@ private final Command startshoot = MoterSpins.startEnd(() -> MoterSpins.startsho
     } else {
     return new PathPlannerAuto("New Auto");
     } */
-   return new PathPlannerAuto("Auto A");
+   return null;
+   //return new PathPlannerAuto("Shoot");
   }
 }

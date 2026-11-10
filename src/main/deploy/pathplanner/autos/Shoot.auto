@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Stand Still"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "runIntake"
           }
         }
       ]

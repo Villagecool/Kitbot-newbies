@@ -21,24 +21,26 @@ public class MoterSpins extends SubsystemBase {
     // This method will be called once per scheduler run
     Logger.recordOutput("motormogqofin", m_motor.getAppliedOutput());
   }
-  public void start(){m_motor.set(.5);}
-  public void stop(){m_motor.set(0);}
+  public void start(){m_motor.set(1);}
+  public void stop(){m_motor.set(0); s_motor.set(0);}
 
   /** sucks balls in */
   public void runIntake() {
-    m_motor.set(0.5);
+    m_motor.set(1);
+    s_motor.set(-1);
     //s_motor.set(-0.5);
   
   }
   /** spits balls out front */
   public void runOuttake() {
-    m_motor.set(-0.5);
+    m_motor.set(-1);
+    s_motor.set(-1);
   }
   /** starts shooter */
-  public void startshoot(){s_motor.set(-0.8);}
+  public void intakeonly(){s_motor.set(1); m_motor.set(1);}
 
   /** stops shooter */
-  public void stopshoot(){s_motor.set(0);}
+  public void stopshoot(){s_motor.set(0);m_motor.set(0);}
 
 
 }
